@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TechPoint - Tech & Tools</title>
+
+  <!-- Google Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- Font Awesome -->
+  <link rel="stylesheet"
+    href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"/>
+
+  <style>
+
+    /* =========================
+       RESET & GLOBAL STYLES
+    ========================== */
+
+    *{
+      margin:0;
+      padding:0;
+      box-sizing:border-box;
+    }
+
+    html{
+      scroll-behavior:smooth;
+    }
+
+    body{
+      font-family:'Poppins',sans-serif;
+      background:#0f172a;
+      color:#e2e8f0;
+      line-height:1.7;
+    }
+
+    a{
+      text-decoration:none;
+    }
+
+    .container{
+      width:90%;
+      max-width:1200px;
+      margin:auto;
+    }
+
+    /* =========================
+       HEADER / NAVBAR
+    ========================== */
+
+    header{
+      width:100%;
+      background:rgba(15,23,42,0.95);
+      backdrop-filter:blur(10px);
+      position:sticky;
+      top:0;
+      z-index:1000;
+      border-bottom:1px solid rgba(255,255,255,0.08);
+    }
+
+    .navbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 0;
+    }
+
+    .logo{
+      font-size:1.7rem;
+      font-weight:700;
+      color:#ffffff;
+    }
+
+    .logo span{
+      color:#38bdf8;
+    }
+
+    .nav-links{
+      display:flex;
+      gap:28px;
+      align-items:center;
+    }
+
+    .nav-links a{
+      color:#cbd5e1;
+      font-size:0.95rem;
+      transition:0.3s;
+      position:relative;
+    }
+
+    .nav-links a:hover{
+      color:#38bdf8;
+    }
+
+    .nav-links a::after{
+      content:'';
+      position:absolute;
+      left:0;
+      bottom:-6px;
+      width:0%;
+      height:2px;
+      background:#38bdf8;
+      transition:0.3s;
+    }
+
+    .nav-links a:hover::after{
+      width:100%;
+    }
+
+    .menu-btn{
+      display:none;
+      font-size:1.4rem;
+      color:#fff;
+      cursor:pointer;
+    }
+
+    /* =========================
+       HERO SECTION
+    ========================== */
+
+    .hero{
+      padding:90px 0 70px;
+      text-align:center;
+      background:
+      radial-gradient(circle at top left, rgba(56,189,248,0.15), transparent 30%),
+      radial-gradient(circle at top right, rgba(244,63,94,0.12), transparent 30%);
+    }
+
+    .hero h1{
+      font-size:3rem;
+      line-height:1.2;
+      margin-bottom:18px;
+      color:#fff;
+    }
+
+    .hero h1 span{
+      color:#38bdf8;
+    }
+
+    .hero p{
+      max-width:760px;
+      margin:auto;
+      color:#94a3b8;
+      font-size:1.05rem;
+    }
+
+    .hero-btn{
+      margin-top:30px;
+      display:inline-block;
+      padding:14px 28px;
+      border-radius:12px;
+      background:#38bdf8;
+      color:#0f172a;
+      font-weight:600;
+      transition:0.3s;
+      box-shadow:0 0 20px rgba(56,189,248,0.35);
+    }
+
+    .hero-btn:hover{
+      transform:translateY(-3px);
+      background:#7dd3fc;
+    }
+
+    /* =========================
+       SECTION TITLE
+    ========================== */
+
+    .section-title{
+      text-align:center;
+      margin-bottom:45px;
+    }
+
+    .section-title h2{
+      font-size:2.2rem;
+      color:#fff;
+      margin-bottom:12px;
+    }
+
+    .section-title p{
+      color:#94a3b8;
+      max-width:700px;
+      margin:auto;
+    }
+
+    /* =========================
+       TOOLS SECTION
+    ========================== */
+
+    .tools-section{
+      padding:80px 0;
+    }
+
+    .tools-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(280px,1fr));
+      gap:28px;
+    }
+
+    .tool-card{
+      background:#1e293b;
+      padding:28px;
+      border-radius:22px;
+      border:1px solid rgba(255,255,255,0.06);
+      transition:0.35s;
+      position:relative;
+      overflow:hidden;
+    }
+
+    .tool-card::before{
+      content:'';
+      position:absolute;
+      width:140px;
+      height:140px;
+      background:rgba(56,189,248,0.08);
+      border-radius:50%;
+      top:-50px;
+      right:-50px;
+    }
+
+    .tool-card:hover{
+      transform:translateY(-8px);
+      border-color:#38bdf8;
+      box-shadow:0 10px 35px rgba(56,189,248,0.15);
+    }
+
+    .tool-icon{
+      width:70px;
+      height:70px;
+      border-radius:18px;
+      background:#0f172a;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      font-size:2rem;
+      margin-bottom:22px;
+      color:#38bdf8;
+      border:1px solid rgba(255,255,255,0.05);
+    }
+
+    .tool-card h3{
+      font-size:1.3rem;
+      margin-bottom:12px;
+      color:#fff;
+    }
+
+    .tool-card p{
+      color:#94a3b8;
+      font-size:0.96rem;
+      margin-bottom:25px;
+    }
+
+    .tool-btn{
+      display:inline-block;
+      background:#38bdf8;
+      color:#0f172a;
+      padding:12px 22px;
+      border-radius:10px;
+      font-weight:600;
+      transition:0.3s;
+    }
+
+    .tool-btn:hover{
+      background:#7dd3fc;
+      transform:scale(1.03);
+    }
+
+    /* =========================
+       BLOG SECTION
+    ========================== */
+
+    .blog-section{
+      padding:20px 0 90px;
+    }
+
+    .blog-grid{
+      display:grid;
+      grid-template-columns:repeat(auto-fit,minmax(320px,1fr));
+      gap:28px;
+    }
+
+    .blog-card{
+      background:#1e293b;
+      border-radius:22px;
+      padding:28px;
+      border:1px solid rgba(255,255,255,0.06);
+      transition:0.35s;
+    }
+
+    .blog-card:hover{
+      transform:translateY(-6px);
+      border-color:#f43f5e;
+      box-shadow:0 10px 35px rgba(244,63,94,0.14);
+    }
+
+    .blog-tag{
+      display:inline-block;
+      background:rgba(244,63,94,0.14);
+      color:#fda4af;
+      padding:7px 14px;
+      border-radius:50px;
+      font-size:0.82rem;
+      margin-bottom:18px;
+      font-weight:500;
+    }
+
+    .blog-card h3{
+      margin-bottom:14px;
+      line-height:1.5;
+    }
+
+    .blog-card h3 a{
+      color:#fff;
+      transition:0.3s;
+    }
+
+    .blog-card h3 a:hover{
+      color:#38bdf8;
+    }
+
+    .blog-card p{
+      color:#94a3b8;
+      font-size:0.95rem;
+    }
+
+    /* =========================
+       FOOTER
+    ========================== */
+
+    footer{
+      background:#020617;
+      border-top:1px solid rgba(255,255,255,0.08);
+      padding:28px 0;
+      text-align:center;
+      color:#94a3b8;
+      font-size:0.95rem;
+    }
+
+    footer span{
+      color:#38bdf8;
+      font-weight:600;
+    }
+
+    /* =========================
+       MOBILE RESPONSIVE
+    ========================== */
+
+    @media(max-width:768px){
+
+      .menu-btn{
+        display:block;
+      }
+
+      .nav-links{
+        position:absolute;
+        top:80px;
+        left:0;
+        width:100%;
+        background:#0f172a;
+        flex-direction:column;
+        padding:25px;
+        display:none;
+        border-top:1px solid rgba(255,255,255,0.06);
+      }
+
+      .nav-links.active{
+        display:flex;
+      }
+
+      .hero{
+        padding:75px 0 60px;
+      }
+
+      .hero h1{
+        font-size:2.1rem;
+      }
+
+      .section-title h2{
+        font-size:1.8rem;
+      }
+
+    }
+
+  </style>
+</head>
+
+<body>
+
+  <!-- =========================
+       HEADER
+  ========================== -->
+
+  <header>
+
+    <div class="container navbar">
+
+      <div class="logo">
+        Tech<span>Point</span>
+      </div>
+
+      <nav class="nav-links" id="navLinks">
+
+        <a href="#">होम</a>
+        <a href="#">सरकारी नौकरी</a>
+        <a href="#">मॉक टेस्ट</a>
+        <a href="#">Tech Blog</a>
+
+      </nav>
+
+      <div class="menu-btn" id="menuBtn">
+        <i class="fa-solid fa-bars"></i>
+      </div>
+
+    </div>
+
+  </header>
+
+  <!-- =========================
+       HERO SECTION
+  ========================== -->
+
+  <section class="hero">
+
+    <div class="container">
+
+      <h1>
+        आधुनिक <span>Tech & Tools</span> प्लेटफॉर्म
+      </h1>
+
+      <p>
+        उपयोगी Web Tools, AI Coding Guides, HTML/CSS सीखने की सामग्री,
+        और आधुनिक टेक्नोलॉजी ब्लॉग — सब कुछ एक ही जगह पर।
+      </p>
+
+      <a href="#tools" class="hero-btn">
+        Tools एक्सप्लोर करें
+      </a>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       TOOLS SECTION
+  ========================== -->
+
+  <section class="tools-section" id="tools">
+
+    <div class="container">
+
+      <div class="section-title">
+
+        <h2>Live Web Tools</h2>
+
+        <p>
+          नीचे दिए गए उपयोगी टूल्स छात्रों, कंटेंट राइटर्स,
+          और वेब डेवलपर्स के लिए बनाए गए हैं।
+        </p>
+
+      </div>
+
+      <div class="tools-grid">
+
+        <!-- TOOL 1 -->
+
+        <div class="tool-card">
+
+          <div class="tool-icon">
+            ✂️
+          </div>
+
+          <h3>Text Splitter</h3>
+
+          <p>
+            बड़े टेक्स्ट को लाइन, पैराग्राफ या शब्दों में
+            आसानी से विभाजित करने के लिए उपयोगी Tool।
+          </p>
+
+          <a href="#" class="tool-btn">
+            Launch Tool
+          </a>
+
+        </div>
+
+        <!-- TOOL 2 -->
+
+        <div class="tool-card">
+
+          <div class="tool-icon">
+            🔢
+          </div>
+
+          <h3>Word/Character Counter</h3>
+
+          <p>
+            किसी भी टेक्स्ट के Words, Characters और
+            Reading Length को तुरंत जांचें।
+          </p>
+
+          <a href="#" class="tool-btn">
+            Launch Tool
+          </a>
+
+        </div>
+
+        <!-- TOOL 3 -->
+
+        <div class="tool-card">
+
+          <div class="tool-icon">
+            💻
+          </div>
+
+          <h3>Live HTML Editor</h3>
+
+          <p>
+            HTML, CSS और JavaScript को Live Preview
+            के साथ तुरंत टेस्ट और रन करें।
+          </p>
+
+          <a href="#" class="tool-btn">
+            Launch Tool
+          </a>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       BLOG SECTION
+  ========================== -->
+
+  <section class="blog-section">
+
+    <div class="container">
+
+      <div class="section-title">
+
+        <h2>Latest Tech Blogs</h2>
+
+        <p>
+          AI Tools, Coding Guides और Web Development
+          से जुड़ी उपयोगी जानकारी पढ़ें।
+        </p>
+
+      </div>
+
+      <div class="blog-grid">
+
+        <!-- BLOG 1 -->
+
+        <div class="blog-card">
+
+          <div class="blog-tag">
+            AI Coding Guide • 25 May 2026
+          </div>
+
+          <h3>
+            <a href="#">
+              ChatGPT और Gemini की मदद से HTML वेबसाइट कैसे बनाएं?
+            </a>
+          </h3>
+
+          <p>
+            जानिए कैसे AI की सहायता से बिना ज्यादा Coding Experience
+            के आधुनिक वेबसाइट तैयार की जा सकती है।
+          </p>
+
+        </div>
+
+        <!-- BLOG 2 -->
+
+        <div class="blog-card">
+
+          <div class="blog-tag">
+            Web Development • 22 May 2026
+          </div>
+
+          <h3>
+            <a href="#">
+              Beginner से Advanced तक पूरा Frontend Roadmap
+            </a>
+          </h3>
+
+          <p>
+            HTML, CSS, JavaScript, Responsive Design और
+            आधुनिक Frameworks सीखने का आसान मार्गदर्शन।
+          </p>
+
+        </div>
+
+        <!-- BLOG 3 -->
+
+        <div class="blog-card">
+
+          <div class="blog-tag">
+            AI Tools • 20 May 2026
+          </div>
+
+          <h3>
+            <a href="#">
+              Students के लिए 10 सबसे उपयोगी Free AI Tools
+            </a>
+          </h3>
+
+          <p>
+            Notes बनाना, Coding करना, Content लिखना और
+            Productivity बढ़ाने वाले शानदार AI प्लेटफॉर्म।
+          </p>
+
+        </div>
+
+        <!-- BLOG 4 -->
+
+        <div class="blog-card">
+
+          <div class="blog-tag">
+            HTML/CSS • 18 May 2026
+          </div>
+
+          <h3>
+            <a href="#">
+              Responsive Website Design सीखने का आसान तरीका
+            </a>
+          </h3>
+
+          <p>
+            मोबाइल और कंप्यूटर दोनों पर सही दिखने वाली
+            वेबसाइट डिजाइन करने की प्रोफेशनल तकनीकें।
+          </p>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </section>
+
+  <!-- =========================
+       FOOTER
+  ========================== -->
+
+  <footer>
+
+    <div class="container">
+
+      © 2026 <span>परीक्षाPoint</span> • सभी अधिकार सुरक्षित |
+      Designed for Modern Educational & Tech Platform
+
+    </div>
+
+  </footer>
+
+  <!-- =========================
+       MOBILE MENU SCRIPT
+  ========================== -->
+
+  <script>
+
+    const menuBtn = document.getElementById("menuBtn");
+    const navLinks = document.getElementById("navLinks");
+
+    menuBtn.addEventListener("click", () => {
+      navLinks.classList.toggle("active");
+    });
+
+  </script>
+
+</body>
+</html>
