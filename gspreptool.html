@@ -1,0 +1,181 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>GS Prep Tool</title>
+    <style>
+        header, .header-outer, .post-title, .post-header, .post-footer, .comments, #header, .date-header, .post-share-buttons {
+            display: none !important;
+        }
+        * { box-sizing: border-box; }
+        body { font-family: 'Segoe UI', sans-serif; background: #ffffff; margin: 0; padding: 0; display: flex; justify-content: center; }
+        .main-card { background: #ffffff; width: 100%; max-width: 100%; padding: 20px; min-height: 100vh; }
+        .stats-dashboard { 
+            display: none; grid-template-columns: 1fr 1fr; gap: 10px; background: #2c3e50; 
+            padding: 15px; border-radius: 12px; margin-bottom: 10px; text-align: center; color: white; 
+        }
+        .stat-val { display: block; font-size: 24px; font-weight: bold; color: #deff9a; }
+        .stat-label { font-size: 11px; text-transform: uppercase; opacity: 0.8; }
+        #partDetails {
+            display: none; background: #f1f4f7; padding: 10px; border-radius: 10px; 
+            margin-bottom: 20px; font-size: 13px; border-left: 5px solid #27ae60;
+        }
+        .part-row { display: flex; justify-content: space-between; padding: 4px 10px; border-bottom: 1px solid #e0e0e0; }
+        .settings-grid { 
+            display: grid; grid-template-columns: 1fr; gap: 15px; background: #f8faff; 
+            padding: 15px; border-radius: 10px; margin-bottom: 20px; border: 1px solid #dce4ec;
+        }
+        label { font-size: 13px; font-weight: bold; color: #34495e; display: block; margin-bottom: 5px; }
+        select, input, textarea { width: 100%; padding: 12px; border: 1px solid #dcdfe6; border-radius: 8px; font-size: 14px; outline: none; }
+        textarea { height: 200px; font-family: monospace; background: #fff; resize: none; }
+        .btn-process { background: #27ae60; color: white; border: none; padding: 18px; border-radius: 10px; font-weight: bold; width: 100%; font-size: 16px; margin: 10px 0; cursor: pointer; }
+        .btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+        .btn-copy { background: #3498db; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        .btn-down { background: #e67e22; color: white; border: none; padding: 14px; border-radius: 8px; font-weight: bold; cursor: pointer; }
+        #output { display: none; margin-top: 15px; background: #fafafa; border: 1px dashed #ccc; height: 350px; white-space: pre; overflow-x: auto; font-size: 12px; }
+        h2 { text-align: center; font-size: 22px; color: #2c3e50; margin: 10px 0 20px 0; }
+    </style>
+</head>
+<body>
+
+<div class="main-card">
+    <h2>🚀 GS Master Splitter Pro</h2>
+    
+    <div id="statsBoard" class="stats-dashboard">
+        <div><span id="totalQ" class="stat-val">0</span><span class="stat-label">कुल प्रश्न</span></div>
+        <div><span id="totalP" class="stat-val">0</span><span class="stat-label">कुल पार्ट्स</span></div>
+    </div>
+
+    <div id="partDetails"></div>
+
+    <div class="settings-grid">
+        <div>
+            <label>1. आउटपुट हेडर चुनें:</label>
+            <select id="headFormat">
+                <option value="const set = {">const set = {</option>
+                <option value="const questions = {">const questions = {</option>
+                <option value="window.set = {">window.set = {</option>
+                <option value="{">केवल { (JSON)</option>
+            </select>
+        </div>
+        <div>
+            <label>2. प्रश्न प्रति पार्ट (Limit):</label>
+            <input type="number" id="chunkSize" value="25">
+        </div>
+    </div>
+
+    <label>3. अपना डेटा यहाँ पेस्ट करें (JavaScript Object):</label>
+    <textarea id="userInput" placeholder='यहाँ पेस्ट करें, जैसे: { "q": "...", "a": [...], "c": 0, "exp": {...} }'></textarea>
+
+    <button class="btn-process" onclick="masterProcess()">प्रोसेस और विवरण देखें</button>
+
+    <div class="btn-row">
+        <button class="btn-copy" onclick="copyCode()">Copy Code</button>
+        <button class="btn-down" onclick="downloadCode()">Download .js</button>
+    </div>
+
+    <textarea id="output" readonly></textarea>
+</div>
+
+<script>
+    function masterProcess() {
+        let input = document.getElementById('userInput').value.trim();
+        const limit = parseInt(document.getElementById('chunkSize').value);
+        const format = document.getElementById('headFormat').value;
+        const outBox = document.getElementById('output');
+        const detailBox = document.getElementById('partDetails');
+
+        if (!input) { alert("डेटा पेस्ट करें!"); return; }
+
+        try {
+            // पुराने Regex को हटाकर सीधे डेटा को Parse करने का नया तरीका
+            // यह कोड इनपुट से एरे निकालता है चाहे वह किसी भी नाम से हो
+            let dataArray = [];
+            
+            // अगर इनपुट में वेरिएबल नाम है तो उसे हटाकर क्लीन ऑब्जेक्ट बनाने की कोशिश
+            let cleanInput = input;
+            if (input.includes('=')) {
+                cleanInput = input.substring(input.indexOf('{'));
+            }
+            if (cleanInput.endsWith(';')) {
+                cleanInput = cleanInput.slice(0, -1);
+            }
+
+            let parsedData = eval("(" + cleanInput + ")");
+
+            // अगर डेटा पहले से पार्ट्स (p1, p2) में है, तो उन्हें एक बड़े एरे में जोड़ें
+            for (let key in parsedData) {
+                if (Array.isArray(parsedData[key])) {
+                    dataArray = dataArray.concat(parsedData[key]);
+                } else if (typeof parsedData[key] === 'object' && parsedData[key].q) {
+                    // अगर सीधा ऑब्जेक्ट एरे है
+                    dataArray.push(parsedData[key]);
+                }
+            }
+            
+            // अगर ऊपर वाला काम न करे (सीधा एरे होने पर)
+            if (dataArray.length === 0 && Array.isArray(parsedData)) {
+                dataArray = parsedData;
+            }
+
+            if (dataArray.length === 0) throw new Error("Format Not Supported");
+
+            let totalParts = Math.ceil(dataArray.length / limit);
+            document.getElementById('totalQ').innerText = dataArray.length;
+            document.getElementById('totalP').innerText = totalParts;
+            document.getElementById('statsBoard').style.display = 'grid';
+
+            let detailHtml = "<strong>पार्ट विवरण:</strong><br>";
+            let finalCode = format + "\n";
+
+            for (let i = 0; i < dataArray.length; i += limit) {
+                let pIndex = (i / limit) + 1;
+                let chunk = dataArray.slice(i, i + limit);
+                
+                detailHtml += `<div class="part-row"><span>Part ${pIndex}:</span> <b>${chunk.length} प्रश्न</b></div>`;
+                
+                finalCode += `  p${pIndex}: [\n`;
+                chunk.forEach((item, idx) => {
+                    let formattedItem = JSON.stringify(item);
+                    finalCode += `    ${formattedItem}${idx === chunk.length - 1 ? "" : ","}\n`;
+                });
+                finalCode += `  ]${(i + limit >= dataArray.length) ? "" : ","}\n`;
+            }
+
+            detailBox.innerHTML = detailHtml;
+            detailBox.style.display = 'block';
+
+            finalCode += "\n};";
+            outBox.value = finalCode;
+            outBox.style.display = "block";
+
+        } catch (e) {
+            console.error(e);
+            alert("डेटा पढ़ने में समस्या हुई! सुनिश्चित करें कि आपका डेटा { q: '...', a: [...] } फॉर्मेट में है।");
+        }
+    }
+
+    function copyCode() {
+        const box = document.getElementById('output');
+        box.select();
+        document.execCommand('copy');
+        alert("कोड कॉपी हो गया!");
+    }
+
+    function downloadCode() {
+        const val = document.getElementById('output').value;
+        if(!val) return;
+        const blob = new Blob(["\ufeff", val], { type: "text/javascript;charset=utf-8" });
+        const a = document.createElement("a");
+        const url = URL.createObjectURL(blob);
+        a.href = url;
+        a.download = "Abhi_Split_Data.js";
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+    }
+</script>
+
+</body>
+</html>
