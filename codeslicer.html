@@ -1,0 +1,1434 @@
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+<title id="dynamicTitle">Code Slicer Pro Extender</title>  
+<link href="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/themes/prism-tomorrow.min.css" rel="stylesheet" />
+<style>  
+    * { box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+    body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; padding: 10px; background: #000; color: #fff; text-align: center; padding-bottom: 240px; overflow-x: hidden; }  
+    .light { background:#f0f2f5; color:#000; }  
+    
+    textarea { width: 100%; max-width: 900px; height: 110px; padding: 12px; border-radius: 8px; margin: 0 auto 10px auto; display: block; font-size: 16px; border: 1px solid #333; background: #111; color: #fff; }  
+    
+    .container-box { background: #111; border: 1px solid #222; border-radius: 10px; padding: 10px; margin: 10px auto; max-width: 900px; display: none; text-align: left; }  
+    
+    .footer-panel { position: fixed; bottom: 0; left: 0; right: 0; background: #000; border-top: 2px solid #333; padding: 8px; z-index: 2000; box-shadow: 0 -5px 15px rgba(0,0,0,0.5); }  
+    
+    .nav-style-row { display: none; justify-content: center; align-items: center; gap: 6px; padding: 12px; background: #0a0a0a; margin-bottom: 8px; border-radius: 8px; flex-wrap: wrap; max-height: 200px; overflow-y: auto; border: 1px solid #222; }
+    
+    .nav-btn { background: #222; color: #fff; padding: 8px 14px; border-radius: 6px; cursor: pointer; font-size: 13px; border: 1px solid #333; font-weight: bold; transition: 0.2s; margin: 2px; flex-grow: 1; min-width: 80px; }
+    .nav-btn:active { transform: scale(0.95); }
+    .nav-btn.active { background: #00c6ff; color: #000; border-color: #fff; }
+    
+    #toast { visibility: hidden; min-width: 250px; background-color: #333; color: #fff; text-align: center; border-radius: 8px; padding: 12px; position: fixed; z-index: 3000; left: 50%; bottom: 250px; transform: translateX(-50%); font-size: 14px; border: 1px solid #00c6ff; box-shadow: 0 4px 15px rgba(0,0,0,0.5); }
+    #toast.show { visibility: visible; -webkit-animation: fadein 0.5s, fadeout 0.5s 2.5s; animation: fadein 0.5s, fadeout 0.5s 2.5s; }
+    @-webkit-keyframes fadein { from {bottom: 230px; opacity: 0;} to {bottom: 250px; opacity: 1;} }
+    @keyframes fadein { from {bottom: 230px; opacity: 0;} to {bottom: 250px; opacity: 1;} }
+    @-webkit-keyframes fadeout { from {bottom: 250px; opacity: 1;} to {bottom: 230px; opacity: 0;} }
+    @keyframes fadeout { from {bottom: 250px; opacity: 1;} to {bottom: 230px; opacity: 0;} }
+
+    .voice-sub-panel { display: none; width: 100%; max-width: 450px; flex-direction: column; gap: 10px; padding: 15px; background: #161616; border-radius: 8px; border: 1px solid #444; margin: 5px auto; }
+    .voice-row { display: flex; justify-content: space-between; align-items: center; font-size: 13px; color: #ccc; margin-bottom: 5px; }
+    select, input[type="range"] { background: #333; color: #fff; border: 1px solid #555; border-radius: 4px; padding: 4px; width: 65%; }
+
+    .control-row { display: flex; flex-wrap: nowrap; justify-content: center; gap: 5px; margin-bottom: 8px; }  
+    
+    .output-box { margin: 10px auto; padding: 10px; background: #0a0a0a; border-radius: 10px; max-width: 900px; border: 1px solid #222; position: relative; }
+    pre[class*="language-"] { text-align: left; margin: 0 !important; max-height: 300px; overflow: auto; font-size: 13px !important; }  
+
+    .nav-bottom { display: flex; justify-content: space-between; align-items: center; max-width: 600px; margin: 0 auto; padding-top: 5px; }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  .btn-group {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+  flex-wrap: wrap;
+  margin: 10px 0;
+}
+
+.btn-group button {
+  padding: 10px 16px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: bold;
+  transition: 0.2s ease;
+}
+
+/* Individual button colors */
+.btn-group button:nth-child(1) {
+  background: #17a2b8;
+  color: white;
+}
+
+.btn-group button:nth-child(2) {
+  background: #dc3545;
+  color: white;
+}
+
+.btn-group button:nth-child(3) {
+  background: #28a745;
+  color: white;
+}
+
+/* Hover effect */
+.btn-group button:hover {
+  transform: scale(1.05);
+  opacity: 0.9;
+}
+</style>  
+</head>  
+<body>  
+   
+  <h2 style="margin: 10px 0; font-size: 20px;">Code Splitter Pro</h2>  
+    <div id="toast"></div>
+
+    <textarea id="inputText" placeholder="Paste your code here..."></textarea>  
+  
+  
+  
+  
+  
+  
+  <div class="btn-group">
+  <button onclick="pasteCode()">📋 Paste</button>
+  <button onclick="clearAll()">🗑 Clear</button>
+  <button onclick="processData()">🚀 Submit</button>
+</div>
+  <!--
+  
+  
+  <button class="nav-btn" onclick="pasteCode()" 
+style="background:#17a2b8; width:100%; max-width:900px; margin-bottom:10px;">
+📋 Paste Code
+</button>
+   <button class="nav-btn" onclick="clearAll()" style="background: #dc3545;">Clear All</button>  
+          
+    <button class="nav-btn" onclick="processData()" style="background: #28a745; width: 100%; max-width: 900px; margin-bottom: 10px; font-size: 16px;">Submit Code</button>
+
+  
+  
+  -->
+  
+  
+   <div id="topStats" class="container-box">
+    <div style="display:flex; justify-content: space-around; font-size: 12px; color: #888;">
+        <div>Total Chars: <span id="totalChars" style="color:#00c6ff;">0</span></div>
+        <div>Lines: <span id="totalLines" style="color:#00c6ff;">0</span></div>
+        <div>Parts: <span id="totalParts" style="color:#00c6ff;">0</span></div>
+    </div>
+</div>
+  
+  
+    <div class="output-box" id="box" style="display:none;">  
+        <button id="copyBtn" class="nav-btn" onclick="copyCurrentCode()" style="position:absolute; top:8px; right:10px; background:#00c6ff; color:#000; font-size: 11px; padding: 4px 10px;">Copy</button>  
+        <h3 id="boxTitle" style="margin: 0; font-size: 13px; color: #888; text-align: left; padding-bottom: 8px;">Part 1 (0 chars)</h3>  
+        <pre><code id="output" class="language-markup"></code></pre>  
+    </div>  
+
+    <div class="footer-panel">
+        <div id="settingsPanel" class="nav-style-row">
+            <button class="nav-btn" onclick="toggleMode()">🌙 Mode</button>  
+             <button class="nav-btn" onclick="toggleNav('extractNav')" style="background: #007bff;">Extract</button>
+            <button class="nav-btn" onclick="toggleNav('dlRow')" style="background: #157347;">Download</button>
+            <button class="nav-btn" onclick="toggleVoiceSubPanel()" style="background: #6f42c1;">🎙️ Voice Settings</button>
+           <button class="nav-btn" onclick="togglePartHeaderMode()" 
+style="background:#ff9800;">
+Part Copy OFF
+</button>
+            
+            <div id="voiceSubPanel" class="voice-sub-panel">
+                <div class="voice-row"><span>Voice:</span> <select id="voiceSelect"></select></div>
+                <div class="voice-row"><span>Speed:</span> <input type="range" id="vSpeed" min="0.5" max="2" step="0.1" value="1"></div>
+                <div class="voice-row"><span>Pitch:</span> <input type="range" id="vPitch" min="0.1" max="2" step="0.1" value="1"></div>
+                <button class="nav-btn" onclick="saveVoiceSettings()" style="background: #00c6ff; color: #000; margin-top: 5px;">Save & Apply ✅</button>
+            </div>
+         
+        </div>
+
+        <div id="partsContainer" class="nav-style-row"></div>
+        <div id="extractNav" class="nav-style-row">
+            <button class="nav-btn" onclick="showExtracted('html')">HTML</button>
+            <button class="nav-btn" onclick="showExtracted('css')">CSS</button>
+            <button class="nav-btn" onclick="showExtracted('js')">JS</button>
+        </div>
+        <div id="dlRow" class="nav-style-row">
+            <button class="nav-btn" onclick="finalDownload('html')" style="background:#157347;">.HTML</button>
+            <button class="nav-btn" onclick="finalDownload('txt')" style="background:#444;">.TXT</button>
+        </div>
+
+        <div class="control-row">
+            <button class="nav-btn" onclick="toggleNav('settingsPanel')" style="background: #444; width: 25%;">⚙️ Settings</button>
+            <button class="nav-btn" onclick="toggleSpeak()" id="speakBtn" style="background: #6f42c1; width: 25%;">Speak 🔊</button>
+            <button class="nav-btn" onclick="setWhatsAppMode()" id="waBtn" style="background: #25d366; color: black; width: 25%;">WA OFF</button>
+            <button class="nav-btn" onclick="copyAll()" style="background: #ff9800; width: 25%;">Copy All</button>  
+        </div>
+
+        <div class="nav-bottom">
+            <button class="nav-btn" onclick="prevPage()" id="prevBtn" style="min-width: 100px;">⬅ Prev</button>  
+            <span id="pages" style="font-weight: bold; color: #00c6ff; font-size: 14px;">0/0</span>  
+            <button class="nav-btn" onclick="nextPage()" id="nextBtn" style="min-width: 100px;">Next ➡</button>
+        </div>
+    </div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/prism.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-javascript.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-css.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-markup.min.js"></script>
+
+<script>  
+  let selectedVoice = null;
+  window.currentExtractMode = "markup";
+let partHeaderMode = false;
+let pages=[], currentPage=0, chunkSize=20000, isWA=false;  
+let fileName = "Project"; 
+let synth = window.speechSynthesis;
+let voices = [];
+let activeVoiceSettings = { index: null, rate: 1, pitch: 1 };
+
+let toastTimer = null;
+function showToast(msg) {
+
+    let toast =
+        document.getElementById("toast");
+
+    if (!toast) return;
+
+    // reset old timer
+    clearTimeout(toastTimer);
+
+    // restart animation
+    toast.classList.remove("show");
+
+    void toast.offsetWidth;
+
+    // set message
+    toast.innerText = msg;
+
+    // show
+    toast.classList.add("show");
+
+    // auto hide
+    toastTimer = setTimeout(() => {
+
+        toast.classList.remove("show");
+
+    }, 3000);
+}
+ function smartChunk(text, size) {
+
+    let chunks = [];
+
+    let start = 0;
+
+    while (start < text.length) {
+
+        let end = start + size;
+
+        // final remaining chunk
+        if (end >= text.length) {
+            chunks.push(text.slice(start));
+            break;
+        }
+
+        // safe breaking points
+        let safePoints = [
+            text.lastIndexOf("\n", end),
+            text.lastIndexOf(";", end),
+            text.lastIndexOf("}", end),
+            text.lastIndexOf(">", end)
+        ].filter(pos => pos > start);
+
+        let safeEnd = safePoints.length
+            ? Math.max(...safePoints)
+            : end;
+
+        // emergency fallback
+        if (safeEnd <= start) {
+            safeEnd = end;
+        }
+
+        chunks.push(text.slice(start, safeEnd));
+
+        start = safeEnd;
+    }
+
+    return chunks;
+} 
+ 
+function findSafeHTMLBreak(text, start, end) {
+
+    let slice = text.slice(start, end);
+
+    // opening & closing HTML tags count
+    let openTags = (slice.match(/<[^\/!][^>]*>/g) || []).length;
+
+    let closeTags = (slice.match(/<\/[^>]+>/g) || []).length;
+
+    // अगर tags balanced नहीं हैं तो पीछे safe > ढूंढो
+    if (openTags > closeTags) {
+
+        let back = slice.lastIndexOf(">");
+
+        if (back > 0) {
+            return start + back + 1;
+        }
+    }
+
+    // fallback safe break positions
+    let safePoints = [
+        text.lastIndexOf("\n", end),
+        text.lastIndexOf(";", end),
+        text.lastIndexOf("}", end),
+        text.lastIndexOf(">", end)
+    ].filter(pos => pos > start);
+
+    // best safe point
+    let safeEnd = safePoints.length
+        ? Math.max(...safePoints)
+        : end;
+
+    // emergency fallback
+    if (safeEnd <= start) {
+        safeEnd = end;
+    }
+
+    return safeEnd;
+}  
+  
+  
+function loadVoices() {
+
+    voices = synth.getVoices();
+
+    if (!voices.length) {
+
+        setTimeout(loadVoices, 200);
+
+        return;
+    }
+
+    let vSelect =
+        document.getElementById("voiceSelect");
+
+    if (!vSelect) return;
+
+    // clear old options
+    vSelect.innerHTML = "";
+
+    let filteredVoices = voices.filter(voice =>
+        voice.lang.startsWith("hi") ||
+        voice.lang.startsWith("en")
+    );
+
+    // fallback if no hi/en voices
+    if (!filteredVoices.length) {
+
+        filteredVoices = voices;
+    }
+
+    let defaultIndex = 0;
+
+    filteredVoices.forEach((voice, i) => {
+
+        let option =
+            document.createElement("option");
+
+        option.textContent =
+            `${voice.name} (${voice.lang})`;
+
+        option.value = i;
+
+        vSelect.appendChild(option);
+
+        // Hindi priority
+        if (voice.lang.startsWith("hi")) {
+
+            defaultIndex = i;
+        }
+    });
+
+    // restore previous selection
+    let savedIndex =
+        activeVoiceSettings.index;
+
+    if (
+        savedIndex !== null &&
+        filteredVoices[savedIndex]
+    ) {
+
+        vSelect.selectedIndex = savedIndex;
+
+    } else {
+
+        vSelect.selectedIndex = defaultIndex;
+
+        activeVoiceSettings.index =
+            defaultIndex;
+    }
+
+    // update selectedVoice safely
+    selectedVoice =
+        filteredVoices[vSelect.selectedIndex] || null;
+
+    // keep filtered list synced
+    voices = filteredVoices;
+}  
+  
+if (
+    "speechSynthesis" in window &&
+    typeof speechSynthesis.onvoiceschanged !== "undefined"
+) {
+
+    speechSynthesis.onvoiceschanged = () => {
+
+        if (!voices.length) {
+
+            loadVoices();
+        }
+    };
+}
+
+function stopSpeaking() {
+
+    if (!synth) return;
+
+    if (
+        synth.speaking ||
+        synth.pending ||
+        synth.paused
+    ) {
+
+        synth.cancel();
+    }
+
+    let btn =
+        document.getElementById("speakBtn");
+
+    if (btn) {
+
+        btn.innerText = "Speak 🔊";
+    }
+}
+function saveVoiceSettings() {
+
+    let vSelect =
+        document.getElementById("voiceSelect");
+
+    if (!vSelect || vSelect.selectedIndex < 0) {
+
+        showToast("No voice selected!");
+
+        return;
+    }
+
+    // safe voice selection
+    selectedVoice =
+        voices[vSelect.selectedIndex] || null;
+
+    activeVoiceSettings.index =
+        vSelect.selectedIndex;
+
+    activeVoiceSettings.rate =
+        parseFloat(
+            document.getElementById("vSpeed").value
+        ) || 1;
+
+    activeVoiceSettings.pitch =
+        parseFloat(
+            document.getElementById("vPitch").value
+        ) || 1;
+
+    // persist settings
+    localStorage.setItem(
+        "voiceSettings",
+        JSON.stringify(activeVoiceSettings)
+    );
+
+    // restart speaking safely
+    if (synth.speaking) {
+
+        synth.cancel();
+
+        setTimeout(() => {
+
+            toggleSpeak();
+
+        }, 200);
+    }
+
+    // close panel
+    document.getElementById(
+        "voiceSubPanel"
+    ).style.display = "none";
+
+    showToast("Voice Settings Saved!");
+}
+  
+function toggleVoiceSubPanel() {
+
+    let panel =
+        document.getElementById("voiceSubPanel");
+
+    if (!panel) return;
+
+    let isOpen =
+        panel.style.display === "flex";
+
+    panel.style.display =
+        isOpen ? "none" : "flex";
+}
+function toggleSpeak() {
+
+    if (!pages.length) {
+
+        showToast("Process code before speaking!");
+
+        return;
+    }
+
+    let speakBtn =
+        document.getElementById("speakBtn");
+
+    // stop current speech
+    if (synth.speaking) {
+
+        synth.cancel();
+
+        speakBtn.innerText = "Speak 🔊";
+
+        return;
+    }
+
+    let text =
+        document.getElementById("output")
+        .textContent
+        .trim();
+
+    if (!text) {
+
+        showToast("Nothing to speak!");
+
+        return;
+    }
+
+    // browser safety limit
+    if (text.length > 15000) {
+
+        text = text.slice(0, 15000);
+
+        showToast("Large text trimmed for speech");
+    }
+
+    let toSpeak =
+        new SpeechSynthesisUtterance(text);
+
+    // selected voice
+    if (selectedVoice) {
+
+        toSpeak.voice = selectedVoice;
+
+    } else {
+
+        let vs =
+            document.getElementById("voiceSelect");
+
+        if (vs && vs.value !== "") {
+
+            toSpeak.voice =
+                voices[parseInt(vs.value)];
+        }
+    }
+
+    // apply settings
+    toSpeak.rate =
+        activeVoiceSettings.rate;
+
+    toSpeak.pitch =
+        activeVoiceSettings.pitch;
+
+    // UI update
+    speakBtn.innerText = "Stop ⏹";
+
+    // fail-safe handlers
+    toSpeak.onend = () => {
+
+        speakBtn.innerText = "Speak 🔊";
+    };
+
+    toSpeak.onerror = () => {
+
+        speakBtn.innerText = "Speak 🔊";
+
+        showToast("Speech failed!");
+    };
+
+    synth.speak(toSpeak);
+}  
+let activePanel = null;
+  
+function toggleNav(rowId) {
+
+    let el = document.getElementById(rowId);
+
+    if (!el) return;
+
+    // check real visibility (not style attribute)
+    let isOpen = el.classList.contains("nav-open");
+
+    // close all
+    document.querySelectorAll(
+        "#settingsPanel, #partsContainer, #extractNav, #dlRow"
+    ).forEach(panel => {
+
+        panel.classList.remove("nav-open");
+        panel.style.display = "none";
+    });
+
+    // toggle off case
+    if (isOpen) {
+
+        activePanel = null;
+
+        return;
+    }
+
+    // open selected
+    el.classList.add("nav-open");
+    el.style.display = "flex";
+
+    activePanel = rowId;
+
+    // voice panel safety
+    if (rowId !== "settingsPanel") {
+
+        let voicePanel =
+            document.getElementById("voiceSubPanel");
+
+        if (voicePanel) {
+
+            voicePanel.style.display = "none";
+        }
+    }
+} 
+  
+let processBusy = false;
+
+function processData(){  
+
+    if (processBusy) return;
+
+    processBusy = true;
+
+    stopSpeaking();
+
+    let text =
+        document.getElementById("inputText").value;
+
+    if (!text.trim()) {
+
+        showToast("Paste some code first!");
+
+        processBusy = false;
+
+        return;
+    }
+
+    pages = [];
+
+    currentPage = 0;
+
+    let titleMatch =
+        text.match(/<title[^>]*>([\s\S]*?)<\/title>/i);
+
+    fileName = titleMatch
+        ? titleMatch[1]
+            .trim()
+            .replace(/[\\\/:*?"<>|]/g, "_")
+        : "Project_File";
+
+    document.getElementById("totalChars").innerText =
+        text.length;
+
+    let linesEl =
+        document.getElementById("totalLines");
+
+    if (linesEl) {
+
+        linesEl.innerText =
+            text.split(/\n/).length;
+    }
+
+    // save only if changed
+    let old = localStorage.getItem("txt");
+
+    if (old !== text) {
+
+        localStorage.setItem("txt", text);
+    }
+
+    requestAnimationFrame(() => {
+
+        splitText();
+
+        processBusy = false;
+    });
+}  
+  
+let splitBusy = false;
+
+function splitText(){
+ window.currentExtractMode = "markup";
+    // prevent duplicate processing
+    if (splitBusy) return;
+
+    splitBusy = true;
+
+    try {
+
+        let text =
+            document.getElementById("inputText").value;
+
+        if (!text.trim()) {
+
+            pages = [];
+
+            currentPage = 0;
+
+            return;
+        }
+
+        pages = [];
+
+        let start = 0;
+
+        while (start < text.length) {
+
+            let end = start + chunkSize;
+
+            // final chunk
+            if (end >= text.length) {
+
+                pages.push(text.slice(start));
+
+                break;
+            }
+
+            // smart safe break
+            let safeEnd =
+                findSafeHTMLBreak(text, start, end);
+
+            // emergency fallback
+            if (safeEnd <= start) {
+
+                safeEnd = end;
+            }
+
+            pages.push(
+                text.slice(start, safeEnd)
+            );
+
+            start = safeEnd;
+        }
+
+        // stats update
+        document.getElementById(
+            "totalParts"
+        ).innerText = pages.length;
+
+        // show containers
+        document.getElementById(
+            "topStats"
+        ).style.display = "block";
+
+        document.getElementById(
+            "box"
+        ).style.display = "block";
+
+        createPartButtons();
+
+        currentPage = 0;
+
+        showPage();
+
+    } finally {
+
+        splitBusy = false;
+    }
+}
+  
+function createPartButtons() {
+
+    let container =
+        document.getElementById("partsContainer");
+
+    if (!container) return;
+
+    // clear old buttons
+    container.innerHTML = "";
+
+    // performance fragment
+    let fragment =
+        document.createDocumentFragment();
+
+    pages.forEach((_, index) => {
+
+        let btn =
+            document.createElement("button");
+
+        btn.className = "nav-btn";
+
+        btn.innerText = index + 1;
+
+        btn.title =
+            `Open Part ${index + 1}`;
+
+        btn.id = "btn-p-" + index;
+
+        btn.onclick = () => {
+
+            stopSpeaking();
+
+            currentPage = index;
+
+            showPage();
+
+            toggleNav("partsContainer");
+        };
+
+        fragment.appendChild(btn);
+    });
+
+    container.appendChild(fragment);
+}
+
+  
+  
+function showPage(){
+
+    if (!pages || !pages.length) return;
+
+    let currentContent =
+        pages[currentPage] || "";
+
+    let output =
+        document.getElementById("output");
+
+    if (!output) return;
+
+    // detect language from mode
+    let lang =
+        window.currentExtractMode || "markup";
+
+    if (lang === "js") {
+        lang = "javascript";
+    }
+
+    // reset prism classes
+    output.className = "";
+
+    output.classList.add(
+        `language-${lang}`
+    );
+
+    // set content
+    output.textContent = currentContent;
+
+    // smooth render
+    window.cancelAnimationFrame(
+        window.prismFrame
+    );
+
+    window.prismFrame =
+        requestAnimationFrame(() => {
+
+       if (output && output.textContent.trim()) {
+    Prism.highlightElement(output);
+}
+    });
+
+    // page counter
+    document.getElementById("pages").innerText =
+        `${currentPage + 1} / ${pages.length}`;
+
+    // title
+    document.getElementById("boxTitle").innerText =
+        `Part ${currentPage + 1} (${currentContent.length} chars)`;
+
+    // active button
+    document.querySelectorAll(
+        "#partsContainer .nav-btn"
+    ).forEach(btn => {
+
+        btn.classList.remove("active");
+    });
+
+    let activeBtn =
+        document.getElementById(
+            "btn-p-" + currentPage
+        );
+
+    if (activeBtn) {
+
+        activeBtn.classList.add("active");
+    }
+}  
+  
+function clearAll(){ 
+
+    stopSpeaking();
+
+    // reset data
+    pages = [];
+    currentPage = 0;
+
+    // clear input/output
+    document.getElementById("inputText").value = "";
+
+    document.getElementById("output").textContent = "";
+
+    // hide main boxes
+    document.getElementById("box").style.display = "none";
+
+    document.getElementById("topStats").style.display = "none";
+
+    // reset counters
+    document.getElementById("pages").innerText = "0/0";
+
+    document.getElementById("totalChars").innerText = "0";
+
+    document.getElementById("totalLines").innerText = "0";
+
+    document.getElementById("totalParts").innerText = "0";
+
+    // clear part buttons
+    document.getElementById("partsContainer").innerHTML = "";
+
+    // close all nav panels
+    document.querySelectorAll(".nav-style-row").forEach(panel => {
+        panel.style.display = "none";
+    });
+
+    activePanel = null;
+
+    // clear saved data
+    localStorage.removeItem("txt");
+
+    showToast("All Cleared!");
+}
+  
+function setWhatsAppMode(){
+
+    isWA = !isWA;
+
+    chunkSize = isWA ? 4000 : 20000;
+
+    let btn =
+        document.getElementById("waBtn");
+
+    if (btn) {
+
+        btn.innerText =
+            isWA ? "WA ON" : "WA OFF";
+    }
+
+    // save state
+    localStorage.setItem(
+        "waMode",
+        isWA ? "1" : "0"
+    );
+
+    // safe re-split
+    if (document.getElementById("inputText").value) {
+
+        requestAnimationFrame(() => {
+
+            splitText();
+        });
+    }
+
+    showToast(
+        isWA ? "WhatsApp Mode ON" : "WhatsApp Mode OFF"
+    );
+}
+
+
+function copyAll() {
+
+    let text =
+        document.getElementById("inputText").value;
+
+    if (!text || !text.trim()) {
+
+        showToast("Nothing to copy!");
+
+        return;
+    }
+
+    navigator.clipboard.writeText(text)
+        .then(() => {
+
+            showToast("All Copied!");
+        })
+        .catch(() => {
+
+            showToast("Copy failed!");
+        });
+}  
+  
+function applyTheme(isLight) {
+
+    document.querySelectorAll("textarea").forEach(el => {
+
+        el.style.background =
+            isLight ? "#ffffff" : "#111";
+
+        el.style.color =
+            isLight ? "#000" : "#fff";
+
+        el.style.borderColor =
+            isLight ? "#ccc" : "#333";
+    });
+
+    document.querySelectorAll(
+        ".container-box, .output-box, .footer-panel"
+    ).forEach(el => {
+
+        el.style.background =
+            isLight ? "#ffffff" : "";
+
+        el.style.color =
+            isLight ? "#000" : "";
+    });
+}
+function toggleMode(){
+
+    document.body.classList.toggle("light");
+
+    let isLight = document.body.classList.contains("light");
+
+  
+  
+  applyTheme(isLight);
+  
+    // save mode
+    localStorage.setItem("lightMode", isLight ? "1" : "0");
+
+    showToast(isLight ? "Light Mode ON" : "Dark Mode ON");
+}
+  
+function nextPage(){
+
+    if (currentPage < pages.length - 1){
+
+        stopSpeaking();
+
+        currentPage++;
+
+        showPage();
+
+        // reset preview scroll
+        let pre = document.querySelector("pre");
+
+        if (pre) {
+            pre.scrollTop = 0;
+            pre.scrollLeft = 0;
+        }
+    }
+}
+
+function prevPage(){
+
+    if (currentPage > 0){
+
+        stopSpeaking();
+
+        currentPage--;
+
+        showPage();
+
+        // reset preview scroll
+        let pre = document.querySelector("pre");
+
+        if (pre) {
+            pre.scrollTop = 0;
+            pre.scrollLeft = 0;
+        }
+    }
+}
+  
+function finalDownload(type) {
+
+    const text = document.getElementById("inputText").value;
+
+    if (!text.trim()) {
+
+        showToast("Nothing to download!");
+
+        return;
+    }
+
+    let mimeType = "text/plain";
+
+    if (type === "html") {
+        mimeType = "text/html";
+    }
+
+    const blob = new Blob(
+        [text],
+        { type: mimeType + ";charset=utf-8" }
+    );
+
+    const a = document.createElement("a");
+
+    a.href = URL.createObjectURL(blob);
+
+    a.download = fileName + "." + type;
+
+    document.body.appendChild(a);
+
+    a.click();
+
+    document.body.removeChild(a);
+
+    URL.revokeObjectURL(a.href);
+
+    showToast(type.toUpperCase() + " Downloaded!");
+}  
+  
+  
+function togglePartHeaderMode() {
+
+    partHeaderMode = !partHeaderMode;
+
+    let btn =
+        document.querySelector(
+            'button[onclick="togglePartHeaderMode()"]'
+        );
+
+    if (btn) {
+
+        btn.innerText =
+            partHeaderMode
+                ? "Part Copy ON"
+                : "Part Copy OFF";
+    }
+
+    // persist state
+    localStorage.setItem(
+        "partHeaderMode",
+        partHeaderMode ? "1" : "0"
+    );
+
+    showToast(
+        partHeaderMode
+            ? "Part Header ON"
+            : "Part Header OFF"
+    );
+}
+  
+let copyLock = false;
+
+async function copyCurrentCode() {
+
+    if (copyLock) return;
+
+    copyLock = true;
+
+    try {
+
+        let outputEl =
+            document.getElementById("output");
+
+        if (!outputEl) {
+
+            showToast("Output not found!");
+
+            return;
+        }
+
+        let code =
+            (outputEl.textContent || "").trim();
+
+        if (!code) {
+
+            showToast("Nothing to copy!");
+
+            return;
+        }
+
+        // safe header
+        if (
+            partHeaderMode &&
+            Array.isArray(pages) &&
+            pages.length > 0 &&
+            currentPage >= 0 &&
+            currentPage < pages.length
+        ) {
+
+            code =
+                `Part ${currentPage + 1} of ${pages.length}\n\n`
+                + code;
+        }
+
+        await navigator.clipboard.writeText(code);
+
+        showToast("Copied!");
+
+    } catch (e) {
+
+        showToast("Copy failed!");
+
+    } finally {
+
+        copyLock = false;
+    }
+}  
+
+async function pasteCode() {
+
+    try {
+
+        let text = "";
+
+        // modern clipboard API
+        if (navigator.clipboard && navigator.clipboard.readText) {
+
+            text = await navigator.clipboard.readText();
+        }
+
+        // manual fallback
+        if (!text.trim()) {
+
+            let temp = prompt("Paste your code here:");
+
+            if (!temp || !temp.trim()) {
+
+                showToast("Clipboard empty!");
+
+                return;
+            }
+
+            text = temp;
+        }
+
+        // set input
+        document.getElementById("inputText").value = text;
+
+        showToast("Code Pasted!");
+
+        // delay processing for smoother UI
+        requestAnimationFrame(() => {
+
+            processData();
+        });
+
+    } catch (e) {
+
+        showToast("Paste not allowed!");
+    }
+}
+  
+function showExtracted(type) {
+
+    stopSpeaking();
+  window.currentExtractMode = type;
+
+    let fullCode = document.getElementById("inputText").value;
+
+    if (!fullCode.trim()) {
+
+        showToast("No Code Found!");
+
+        return;
+    }
+
+    let jsRegex =
+        /<script[^>]*>([\s\S]*?)<\/script>/gi;
+
+    let cssRegex =
+        /<style[^>]*>([\s\S]*?)<\/style>/gi;
+
+    let outputText = "";
+
+    if (type === "js") {
+
+        let jsArr = [];
+
+        let m;
+
+        while ((m = jsRegex.exec(fullCode))) {
+
+            jsArr.push(m[1]);
+        }
+
+        outputText = jsArr.join("\n\n");
+
+    } else if (type === "css") {
+
+        let cssArr = [];
+
+        let m;
+
+        while ((m = cssRegex.exec(fullCode))) {
+
+            cssArr.push(m[1]);
+        }
+
+        outputText = cssArr.join("\n\n");
+
+    } else {
+
+        outputText = fullCode
+            .replace(jsRegex, "")
+            .replace(cssRegex, "")
+            .trim();
+    }
+
+    // extracted preview mode
+    pages = [outputText || "No Data Found"];
+
+    currentPage = 0;
+
+    // update preview
+    document.getElementById("output").textContent = pages[0];
+  let output =
+    document.getElementById("output");
+
+output.className = "";
+
+let prismLang = type;
+
+if (prismLang === "js") {
+    prismLang = "javascript";
+}
+
+output.classList.add(
+    `language-${prismLang}`
+);
+
+    document.getElementById("pages").innerText = "1 / 1";
+
+    document.getElementById("boxTitle").innerText =
+        `${type.toUpperCase()} Code (${pages[0].length} chars)`;
+
+    Prism.highlightElement(document.getElementById("output"));
+
+    // clear active part buttons
+    document.querySelectorAll("#partsContainer .nav-btn")
+        .forEach(btn => btn.classList.remove("active"));
+
+    showToast(type.toUpperCase() + " Extracted!");
+}
+window.onload = () => {
+
+    // restore light mode
+    if (localStorage.getItem("lightMode") === "1") {
+
+        document.body.classList.add("light");
+
+applyTheme(true);
+    }
+
+    // restore saved voice settings
+    let savedVoice =
+        localStorage.getItem("voiceSettings");
+
+    if (savedVoice) {
+
+        try {
+
+            activeVoiceSettings =
+                JSON.parse(savedVoice);
+
+        } catch (e) {
+
+            activeVoiceSettings = {
+                index: null,
+                rate: 1,
+                pitch: 1
+            };
+        }
+    }
+
+  
+  
+  
+  setTimeout(() => {
+
+    if (activeVoiceSettings.index !== null) {
+
+        let vSelect =
+            document.getElementById("voiceSelect");
+
+        if (vSelect) {
+
+            vSelect.selectedIndex =
+                activeVoiceSettings.index;
+        }
+    }
+
+}, 500);
+  
+  
+  
+  
+  
+  
+  
+  
+    // apply sliders
+    let speedEl =
+        document.getElementById("vSpeed");
+
+    let pitchEl =
+        document.getElementById("vPitch");
+
+    if (speedEl) {
+        speedEl.value =
+            activeVoiceSettings.rate || 1;
+    }
+
+    if (pitchEl) {
+        pitchEl.value =
+            activeVoiceSettings.pitch || 1;
+    }
+
+    // preload voices
+    window.speechSynthesis.getVoices();
+
+    loadVoices();
+  partHeaderMode =
+    localStorage.getItem("partHeaderMode") === "1";
+  
+  isWA = localStorage.getItem("waMode") === "1";
+chunkSize = isWA ? 4000 : 20000;
+
+    // restore saved text
+    let t = localStorage.getItem("txt");
+
+    if (t) {
+
+        document.getElementById("inputText").value = t;
+
+        processData();
+    }
+};  
+  
+  
+</script>  
+  
+  
+</body>  
+</html>
